@@ -16,12 +16,45 @@ Item {
 
     property bool paused: false
 
+    readonly property bool needsAutoDetect: {
+        let saved = pluginApi?.pluginSettings?.inputDevices
+        if (saved && saved.length > 0) return false
+        let legacy = pluginApi?.pluginSettings?.inputDevice
+            ?? pluginApi?.manifest?.metadata?.defaultSettings?.inputDevice
+        return !legacy
+    }
+
     readonly property var inputDevices: {
         let saved = pluginApi?.pluginSettings?.inputDevices
         if (saved && saved.length > 0) return saved
         let legacy = pluginApi?.pluginSettings?.inputDevice
             ?? pluginApi?.manifest?.metadata?.defaultSettings?.inputDevice
-        return legacy ? [legacy] : ["/dev/input/event0"]
+        if (legacy) return [legacy]
+        return ["/dev/input/event0"]
+    }
+
+    Process {
+        id: detectKbdProcess
+        command: ["sh", "-c", "for f in /dev/input/by-id/*-event-kbd; do [ -e \"$f\" ] && echo \"$f\"; done"]
+        running: root.needsAutoDetect
+
+        property var detected: []
+
+        stdout: SplitParser {
+            onRead: data => {
+                const line = data.trim()
+                if (line.length > 0)
+                    detectKbdProcess.detected = detectKbdProcess.detected.concat([line])
+            }
+        }
+
+        onExited: {
+            if (detected.length > 0 && root.pluginApi) {
+                root.pluginApi.pluginSettings.inputDevices = detected
+                root.pluginApi.saveSettings()
+                Logger.i("SlowBongo", "Auto-detected " + detected.length + " keyboard(s), saved to settings")
+            }
+        }
     }
 
     readonly property int idleTimeout: pluginApi?.pluginSettings?.idleTimeout
