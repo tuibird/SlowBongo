@@ -1,0 +1,19 @@
+{
+  "id": "slowbongo",
+  "name": "Slow Bongo",
+  "version": "1.0.0",
+  "author": "tui",
+  "description": "A bongo cat that sits in your bar and slaps when you type.",
+  "license": "MIT",
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "settings": "Settings.qml"
+  },
+  "metadata": {
+    "defaultSettings": {
+      "inputDevice": "/dev/input/by-id/usb-ROYUAN_EPOMAKER_TH80_SE-event-kbd",
+      "idleTimeout": 150
+    }
+  }
+}
