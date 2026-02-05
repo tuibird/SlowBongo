@@ -127,6 +127,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             font.family: bongoFont.name
             font.pixelSize: root.capsuleHeight * 0.95 * (root.mainInstance?.catSize ?? 1.0)
+            font.weight: root.mainInstance?.catWeight ?? Font.Medium
             color: root.resolvedCatColor
             text: root.glyphMap[root.catState] ?? "bc"
             visible: !root.paused

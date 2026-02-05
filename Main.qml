@@ -147,6 +147,10 @@ Item {
         ?? pluginApi?.manifest?.metadata?.defaultSettings?.catOffsetY
         ?? 0.0
 
+    readonly property int catWeight: pluginApi?.pluginSettings?.catWeight
+        ?? pluginApi?.manifest?.metadata?.defaultSettings?.catWeight
+        ?? Font.Medium
+
     readonly property bool raveMode: pluginApi?.pluginSettings?.raveMode
         ?? pluginApi?.manifest?.metadata?.defaultSettings?.raveMode
         ?? false
