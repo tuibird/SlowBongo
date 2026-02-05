@@ -165,13 +165,13 @@ Item {
     // Rainbow color cycling for rave mode
     property int rainbowIndex: 0
     readonly property var rainbowColors: [
-        "#ff0000", // Red
-        "#ff7f00", // Orange
-        "#ffff00", // Yellow
-        "#00ff00", // Green
-        "#0000ff", // Blue
-        "#4b0082", // Indigo
-        "#9400d3"  // Violet
+        "#cc0000", // Red
+        "#cc6600", // Orange
+        "#cccc00", // Yellow 
+        "#00cc00", // Green 
+        "#0000cc", // Blue 
+        "#3d0066", // Indigo
+        "#7700aa"  // Violet 
     ]
 
     // Cached audio intensity - recalculated only when CavaService.values changes

@@ -21,13 +21,16 @@ Item {
 
     readonly property real contentWidth: isBarVertical
         ? capsuleHeight
-        : catText.implicitWidth * (mainInstance?.catSize ?? 1.0)
+        : (catText.implicitWidth * (mainInstance?.catSize ?? 1.0)) + 15
     readonly property real contentHeight: isBarVertical
         ? catText.implicitHeight * (mainInstance?.catSize ?? 1.0)
         : capsuleHeight
 
-    implicitWidth: isBarVertical ? capsuleHeight : contentWidth
-    implicitHeight: isBarVertical ? contentHeight : capsuleHeight
+    width: isBarVertical ? capsuleHeight : contentWidth
+    height: isBarVertical ? contentHeight : capsuleHeight
+
+    implicitWidth: width
+    implicitHeight: height
 
     // Each pose is two glyphs (left half + right half):
     // b = left half paw up,  d = left half paw down
@@ -72,9 +75,7 @@ Item {
 
     Rectangle {
         id: visualCapsule
-        width: root.contentWidth
-        height: root.contentHeight
-        anchors.centerIn: parent
+        anchors.fill: parent
         radius: Style.radiusL
         color: mouseArea.containsMouse ? Color.mHover : Style.capsuleColor
         border.color: Style.capsuleBorderColor
