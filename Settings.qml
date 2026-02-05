@@ -226,94 +226,98 @@ NScrollView {
 
         NBox {
             Layout.fillWidth: true
-            implicitHeight: devContent.implicitHeight + Style.marginM * 2
+            implicitHeight: Math.min(devContent.implicitHeight + Style.marginM * 2, 400)
 
-            ColumnLayout {
-                id: devContent
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
+            NScrollView {
+                id: deviceScrollView
+                anchors.fill: parent
                 anchors.margins: Style.marginM
-                spacing: Style.marginS
+                horizontalPolicy: ScrollBar.AlwaysOff
 
-                Repeater {
-                    model: root.inputDevices
+                ColumnLayout {
+                    id: devContent
+                    width: deviceScrollView.availableWidth
+                    spacing: Style.marginS
 
-                    Rectangle {
-                        required property var modelData
+                    Repeater {
+                        model: root.inputDevices
 
-                        property bool isChecked: root.isSelected(modelData.key)
-                        property bool isHovered: mouseArea.containsMouse
+                        Rectangle {
+                            required property var modelData
 
-                        Layout.fillWidth: true
-                        implicitHeight: rowContent.implicitHeight + Style.marginS * 2
-                        radius: Style.iRadiusXS
-                        color: isHovered ? Color.mSurfaceContainer : "transparent"
+                            property bool isChecked: root.isSelected(modelData.key)
+                            property bool isHovered: mouseArea.containsMouse
 
-                        Behavior on color {
-                            ColorAnimation { duration: Style.animationFast }
-                        }
+                            Layout.fillWidth: true
+                            implicitHeight: rowContent.implicitHeight + Style.marginS * 2
+                            radius: Style.iRadiusXS
+                            color: isHovered ? Color.mSurfaceContainer : "transparent"
 
-                        MouseArea {
-                            id: mouseArea
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            hoverEnabled: true
-                            onClicked: root.toggleDevice(modelData.key)
-                        }
-
-                        RowLayout {
-                            id: rowContent
-                            anchors.fill: parent
-                            anchors.leftMargin: Style.marginS
-                            anchors.rightMargin: Style.marginS
-                            spacing: Style.marginM
-
-                            Rectangle {
-                                id: checkBox
-                                implicitWidth: Math.round(Style.baseWidgetSize * 0.7)
-                                implicitHeight: Math.round(Style.baseWidgetSize * 0.7)
-                                radius: Style.iRadiusXS
-                                color: isChecked ? Color.mPrimary : Color.mSurface
-                                border.color: isHovered ? Color.mPrimary : Color.mOutline
-                                border.width: Style.borderS
-
-                                Behavior on color {
-                                    ColorAnimation { duration: Style.animationFast }
-                                }
-                                Behavior on border.color {
-                                    ColorAnimation { duration: Style.animationFast }
-                                }
-
-                                NIcon {
-                                    visible: isChecked
-                                    anchors.centerIn: parent
-                                    anchors.horizontalCenterOffset: -1
-                                    icon: "check"
-                                    color: Color.mOnPrimary
-                                    pointSize: Math.max(Style.fontSizeXS, checkBox.implicitWidth * 0.5)
-                                }
+                            Behavior on color {
+                                ColorAnimation { duration: Style.animationFast }
                             }
 
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 2
+                            MouseArea {
+                                id: mouseArea
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                hoverEnabled: true
+                                onClicked: root.toggleDevice(modelData.key)
+                            }
 
-                                Text {
-                                    text: modelData.name
-                                    color: Color.mOnSurface
-                                    font.pointSize: Style.fontSizeM
-                                    elide: Text.ElideRight
-                                    Layout.fillWidth: true
+                            RowLayout {
+                                id: rowContent
+                                anchors.fill: parent
+                                anchors.leftMargin: Style.marginS
+                                anchors.rightMargin: Style.marginS
+                                spacing: Style.marginM
+
+                                Rectangle {
+                                    id: checkBox
+                                    implicitWidth: Math.round(Style.baseWidgetSize * 0.7)
+                                    implicitHeight: Math.round(Style.baseWidgetSize * 0.7)
+                                    radius: Style.iRadiusXS
+                                    color: isChecked ? Color.mPrimary : Color.mSurface
+                                    border.color: isHovered ? Color.mPrimary : Color.mOutline
+                                    border.width: Style.borderS
+
+                                    Behavior on color {
+                                        ColorAnimation { duration: Style.animationFast }
+                                    }
+                                    Behavior on border.color {
+                                        ColorAnimation { duration: Style.animationFast }
+                                    }
+
+                                    NIcon {
+                                        visible: isChecked
+                                        anchors.centerIn: parent
+                                        anchors.horizontalCenterOffset: -1
+                                        icon: "check"
+                                        color: Color.mOnPrimary
+                                        pointSize: Math.max(Style.fontSizeXS, checkBox.implicitWidth * 0.5)
+                                    }
                                 }
 
-                                Text {
-                                    text: modelData.eventDev
-                                    color: Color.mOnSurfaceVariant
-                                    font.pointSize: Style.fontSizeS
-                                    visible: text !== ""
-                                    elide: Text.ElideRight
+                                ColumnLayout {
                                     Layout.fillWidth: true
+                                    spacing: 2
+
+                                    Text {
+                                        text: modelData.name
+                                        color: Color.mOnSurface
+                                        font.pointSize: Style.fontSizeM
+                                        elide: Text.ElideRight
+                                        Layout.fillWidth: true
+                                    }
+
+                                    Text {
+                                        text: modelData.eventDev
+                                        color: Color.mOnSurfaceVariant
+                                        font.pointSize: Style.fontSizeS
+                                        visible: text !== ""
+                                        elide: Text.ElideRight
+                                        Layout.fillWidth: true
+                                    }
                                 }
                             }
                         }
