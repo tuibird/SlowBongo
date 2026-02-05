@@ -12,29 +12,23 @@ Item {
     // Unique instance ID for CavaService registration
     readonly property string cavaInstanceId: "plugin:slowbongo:" + Date.now() + Math.random()
 
-    // 0 = idle (both paws up), 1 = left slap, 2 = right slap
-    property int catState: 0
-
-    // Track which paw slapped last to alternate
-    property bool leftWasLast: false
-
+    property int catState: 0  // 0 = idle (both paws up), 1 = left slap, 2 = right slap
+    property bool leftWasLast: false  // Track which paw slapped last to alternate
     property bool paused: false
 
     readonly property bool needsAutoDetect: {
-        let saved = pluginApi?.pluginSettings?.inputDevices
-        if (saved && saved.length > 0) return false
-        let legacy = pluginApi?.pluginSettings?.inputDevice
-            ?? pluginApi?.manifest?.metadata?.defaultSettings?.inputDevice
-        return !legacy
+        const saved = pluginApi?.pluginSettings?.inputDevices;
+        if (saved && saved.length > 0) return false;
+        const legacy = pluginApi?.pluginSettings?.inputDevice ?? pluginApi?.manifest?.metadata?.defaultSettings?.inputDevice;
+        return !legacy;
     }
 
     readonly property var inputDevices: {
-        let saved = pluginApi?.pluginSettings?.inputDevices
-        if (saved && saved.length > 0) return saved
-        let legacy = pluginApi?.pluginSettings?.inputDevice
-            ?? pluginApi?.manifest?.metadata?.defaultSettings?.inputDevice
-        if (legacy) return [legacy]
-        return ["/dev/input/event0"]
+        const saved = pluginApi?.pluginSettings?.inputDevices;
+        if (saved && saved.length > 0) return saved;
+        const legacy = pluginApi?.pluginSettings?.inputDevice ?? pluginApi?.manifest?.metadata?.defaultSettings?.inputDevice;
+        if (legacy) return [legacy];
+        return ["/dev/input/event0"];
     }
 
     property var autoDetectedDevices: []
@@ -47,18 +41,16 @@ Item {
 
         stdout: SplitParser {
             onRead: data => {
-                const line = data.trim()
-                if (line.length > 0)
-                    root.autoDetectedDevices = root.autoDetectedDevices.concat([line])
+                const line = data.trim();
+                if (line.length > 0) root.autoDetectedDevices = root.autoDetectedDevices.concat([line]);
             }
         }
 
-        onExited: function(exitCode, exitStatus) {
-            // If no by-id keyboards found, try evtest
+        onExited: (exitCode, exitStatus) => {
             if (root.autoDetectedDevices.length === 0) {
-                detectEvtestProcess.running = true
+                detectEvtestProcess.running = true;
             } else {
-                saveDetectedDevices()
+                saveDetectedDevices();
             }
         }
     }
@@ -71,23 +63,19 @@ Item {
 
         stdout: SplitParser {
             onRead: data => {
-                const line = data.trim()
-                // Look for lines with "keyboard" or "keypad"
+                const line = data.trim();
                 if (line.match(/keyboard|keypad/i)) {
-                    const match = line.match(/^(\/dev\/input\/event\d+):/)
-                    if (match) {
-                        root.autoDetectedDevices = root.autoDetectedDevices.concat([match[1]])
-                    }
+                    const match = line.match(/^(\/dev\/input\/event\d+):/);
+                    if (match) root.autoDetectedDevices = root.autoDetectedDevices.concat([match[1]]);
                 }
             }
         }
 
-        onExited: function(exitCode, exitStatus) {
-            // If evtest found nothing, fall back to event3
+        onExited: (exitCode, exitStatus) => {
             if (root.autoDetectedDevices.length === 0) {
-                detectFallbackProcess.running = true
+                detectFallbackProcess.running = true;
             } else {
-                saveDetectedDevices()
+                saveDetectedDevices();
             }
         }
     }
@@ -100,197 +88,111 @@ Item {
 
         stdout: SplitParser {
             onRead: data => {
-                const line = data.trim()
-                if (line.length > 0)
-                    root.autoDetectedDevices = root.autoDetectedDevices.concat([line])
+                const line = data.trim();
+                if (line.length > 0) root.autoDetectedDevices = root.autoDetectedDevices.concat([line]);
             }
         }
 
-        onExited: function(exitCode, exitStatus) {
-            saveDetectedDevices()
-        }
+        onExited: (exitCode, exitStatus) => saveDetectedDevices()
     }
 
     function saveDetectedDevices() {
         if (root.autoDetectedDevices.length > 0 && root.pluginApi) {
-            root.pluginApi.pluginSettings.inputDevices = root.autoDetectedDevices
-            root.pluginApi.saveSettings()
-            Logger.i("SlowBongo", "Auto-detected " + root.autoDetectedDevices.length + " keyboard device(s), saved to settings")
+            root.pluginApi.pluginSettings.inputDevices = root.autoDetectedDevices;
+            root.pluginApi.saveSettings();
+            Logger.i("SlowBongo", "Auto-detected " + root.autoDetectedDevices.length + " keyboard device(s), saved to settings");
         }
     }
 
-    // Register with CavaService when pluginApi becomes available
     onPluginApiChanged: {
         if (pluginApi) {
-            CavaService.registerComponent(cavaInstanceId)
-            Logger.i("SlowBongo", "Registered with CavaService for audio detection")
+            CavaService.registerComponent(cavaInstanceId);
+            Logger.i("SlowBongo", "Registered with CavaService for audio detection");
         }
     }
 
-    Component.onDestruction: {
-        CavaService.unregisterComponent(cavaInstanceId)
-    }
+    Component.onDestruction: CavaService.unregisterComponent(cavaInstanceId)
 
-    readonly property int idleTimeout: pluginApi?.pluginSettings?.idleTimeout
-        ?? pluginApi?.manifest?.metadata?.defaultSettings?.idleTimeout
-        ?? 500
+    readonly property int idleTimeout: pluginApi?.pluginSettings?.idleTimeout ?? pluginApi?.manifest?.metadata?.defaultSettings?.idleTimeout ?? 500
+    readonly property string catColor: pluginApi?.pluginSettings?.catColor ?? pluginApi?.manifest?.metadata?.defaultSettings?.catColor ?? "default"
+    readonly property real catSize: pluginApi?.pluginSettings?.catSize ?? pluginApi?.manifest?.metadata?.defaultSettings?.catSize ?? 1.0
+    readonly property real catOffsetY: pluginApi?.pluginSettings?.catOffsetY ?? pluginApi?.manifest?.metadata?.defaultSettings?.catOffsetY ?? 0.0
+    readonly property int catWeight: pluginApi?.pluginSettings?.catWeight ?? pluginApi?.manifest?.metadata?.defaultSettings?.catWeight ?? Font.Medium
+    readonly property bool raveMode: pluginApi?.pluginSettings?.raveMode ?? pluginApi?.manifest?.metadata?.defaultSettings?.raveMode ?? false
+    readonly property bool tappyMode: pluginApi?.pluginSettings?.tappyMode ?? pluginApi?.manifest?.metadata?.defaultSettings?.tappyMode ?? false
 
-    readonly property string catColor: pluginApi?.pluginSettings?.catColor
-        ?? pluginApi?.manifest?.metadata?.defaultSettings?.catColor
-        ?? "default"
-
-    readonly property real catSize: pluginApi?.pluginSettings?.catSize
-        ?? pluginApi?.manifest?.metadata?.defaultSettings?.catSize
-        ?? 1.0
-
-    readonly property real catOffsetY: pluginApi?.pluginSettings?.catOffsetY
-        ?? pluginApi?.manifest?.metadata?.defaultSettings?.catOffsetY
-        ?? 0.0
-
-    readonly property int catWeight: pluginApi?.pluginSettings?.catWeight
-        ?? pluginApi?.manifest?.metadata?.defaultSettings?.catWeight
-        ?? Font.Medium
-
-    readonly property bool raveMode: pluginApi?.pluginSettings?.raveMode
-        ?? pluginApi?.manifest?.metadata?.defaultSettings?.raveMode
-        ?? false
-
-    readonly property bool tappyMode: pluginApi?.pluginSettings?.tappyMode
-        ?? pluginApi?.manifest?.metadata?.defaultSettings?.tappyMode
-        ?? false
-
-    // Check if any music/audio is currently playing using CavaService
     readonly property bool anyMusicPlaying: !CavaService.isIdle
-
-    // Rainbow color cycling for rave mode
     property int rainbowIndex: 0
-    readonly property var rainbowColors: [
-        '#aa0000', // Red
-        '#b65c02', // Orange
-        '#bb9c14', // Yellow 
-        '#00a100', // Green 
-        '#01019b', // Blue 
-        '#37005c', // Indigo
-        '#6a0196'  // Violet 
-    ]
-
-    // Cached audio intensity - recalculated only when CavaService.values changes
+    readonly property var rainbowColors: ['#aa0000', '#b65c02', '#bb9c14', '#00a100', '#01019b', '#37005c', '#6a0196']
     property real audioIntensity: 0
-
-    // Smoothed beat intensity for less jittery color changes
     property real smoothedIntensity: 0
-    readonly property real beatThreshold: 0.20  // Lower threshold for more sensitivity
-
-    // Check if tappy mode should be active
+    readonly property real beatThreshold: 0.20
     readonly property bool useTappyMode: tappyMode && anyMusicPlaying
 
-    // Update smoothed intensity and detect beats
     Connections {
         target: CavaService
         function onValuesChanged() {
-            // Early return if both modes are disabled - skip all calculations
-            if (!root.useRaveColors && !root.useTappyMode) return
+            if (!root.useRaveColors && !root.useTappyMode) return;
 
-            // Calculate audio intensity from bass and mid-range frequencies
             if (!CavaService.values || CavaService.values.length === 0) {
-                root.audioIntensity = 0
-                return
+                root.audioIntensity = 0;
+                return;
             }
 
-            // Weight bass (0-7) and mid-range (8-15) frequencies
-            let bassSum = 0
-            let midSum = 0
-            const bassCount = Math.min(8, CavaService.values.length)
-            const midCount = Math.min(16, CavaService.values.length)
+            let bassSum = 0;
+            let midSum = 0;
+            const bassCount = Math.min(8, CavaService.values.length);
+            const midCount = Math.min(16, CavaService.values.length);
 
-            // Get bass frequencies (bass drum, kick)
             for (let i = 0; i < bassCount; i++) {
-                bassSum += CavaService.values[i] || 0
+                bassSum += CavaService.values[i] || 0;
             }
 
-            // Get mid-range frequencies (snare, vocals, melodic elements)
             for (let i = 8; i < midCount; i++) {
-                midSum += CavaService.values[i] || 0
+                midSum += CavaService.values[i] || 0;
             }
 
-            const bassAvg = bassSum / bassCount
-            const midAvg = midSum / Math.max(1, midCount - 8)
+            const bassAvg = bassSum / bassCount;
+            const midAvg = midSum / Math.max(1, midCount - 8);
+            root.audioIntensity = (bassAvg * 0.8) + (midAvg * 0.6);
 
-            // Weight bass and low-mid more heavily (70% bass, 50% mid) for low-mid to low sensitivity
-            root.audioIntensity = (bassAvg * 0.8) + (midAvg * 0.6)
+            const alpha = 0.4;
+            root.smoothedIntensity = alpha * root.audioIntensity + (1 - alpha) * root.smoothedIntensity;
 
-            // Smooth the intensity with exponential moving average
-            const alpha = 0.4  // Smoothing factor (0-1, higher = more responsive)
-            root.smoothedIntensity = alpha * root.audioIntensity + (1 - alpha) * root.smoothedIntensity
-
-            // Detect beat (intensity spike)
             if (root.smoothedIntensity > root.beatThreshold) {
                 if (!beatCooldownTimer.running) {
-                    // Rave mode: change color
                     if (root.useRaveColors) {
-                        // Advance to next rainbow color
-                        root.rainbowIndex = (root.rainbowIndex + 1) % root.rainbowColors.length
-                        // Flash the rainbow color
-                        root.isFlashing = true
-                        flashTimer.restart()
+                        root.rainbowIndex = (root.rainbowIndex + 1) % root.rainbowColors.length;
+                        root.isFlashing = true;
+                        flashTimer.restart();
                     }
 
-                    // Tappy mode: make cat tap
-                    if (root.useTappyMode) {
-                        root.onKeyPress()
-                    }
+                    if (root.useTappyMode) root.onKeyPress();
 
-                    // Start cooldown to prevent rapid firing
-                    beatCooldownTimer.restart()
+                    beatCooldownTimer.restart();
                 }
             }
         }
     }
 
-    // Flash state - true when showing rainbow color, false when showing base color
     property bool isFlashing: false
 
-    // Cooldown timer to prevent color changes from happening too rapidly
     Timer {
         id: beatCooldownTimer
-        interval: 150  // Minimum time between color changes (ms) - increased for performance
+        interval: 150
         repeat: false
     }
 
-    // Flash duration timer - how long to show the rainbow color before returning to base
     Timer {
         id: flashTimer
-        interval: 100  // Show rainbow color for 100ms
+        interval: 100
         repeat: false
-        onTriggered: {
-            root.isFlashing = false
-        }
+        onTriggered: root.isFlashing = false
     }
 
     readonly property string currentRainbowColor: rainbowColors[rainbowIndex]
-
-    // Should we use rave mode colors?
     readonly property bool useRaveColors: raveMode && anyMusicPlaying
-
-    // The actual color to display - flash rainbow on beat, otherwise show base color
     readonly property bool showRainbowColor: useRaveColors && isFlashing
-
-    // Debug logging - disabled for performance
-    // onRaveModeChanged: {
-    //     Logger.i("SlowBongo", "Rave mode: " + raveMode)
-    // }
-
-    // onAnyMusicPlayingChanged: {
-    //     Logger.i("SlowBongo", "Music playing: " + anyMusicPlaying + " (CavaService.isIdle=" + CavaService.isIdle + ")")
-    // }
-
-    // onUseRaveColorsChanged: {
-    //     Logger.i("SlowBongo", "Use rave colors: " + useRaveColors + " (raveMode=" + raveMode + ", musicPlaying=" + anyMusicPlaying + ")")
-    // }
-
-    // onCurrentRainbowColorChanged: {
-    //     Logger.i("SlowBongo", "Rainbow color changed to: " + currentRainbowColor + " (beat detected, intensity=" + smoothedIntensity.toFixed(2) + ")")
-    // }
 
     function onKeyPress() {
         if (root.paused) return;
@@ -324,16 +226,14 @@ Item {
                 command: ["evtest", modelData]
                 running: true
 
-                onExited: function(exitCode, exitStatus) {
-                    Logger.w("SlowBongo", "evtest (" + modelData + ") exited with code " + exitCode + ", restarting...")
+                onExited: (exitCode, exitStatus) => {
+                    Logger.w("SlowBongo", "evtest (" + modelData + ") exited with code " + exitCode + ", restarting...");
                     restartTimer.start();
                 }
 
                 stdout: SplitParser {
                     onRead: data => {
-                        if (data.includes("EV_KEY") && data.includes("value 1")) {
-                            root.onKeyPress();
-                        }
+                        if (data.includes("EV_KEY") && data.includes("value 1")) root.onKeyPress();
                     }
                 }
             }
