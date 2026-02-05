@@ -21,9 +21,9 @@ Item {
 
     readonly property real contentWidth: isBarVertical
         ? capsuleHeight
-        : catText.implicitWidth
+        : catText.implicitWidth * (mainInstance?.catSize ?? 1.0)
     readonly property real contentHeight: isBarVertical
-        ? catText.implicitHeight
+        ? catText.implicitHeight * (mainInstance?.catSize ?? 1.0)
         : capsuleHeight
 
     implicitWidth: isBarVertical ? capsuleHeight : contentWidth
@@ -64,7 +64,7 @@ Item {
         color: mouseArea.containsMouse ? Color.mHover : Style.capsuleColor
         border.color: Style.capsuleBorderColor
         border.width: Style.capsuleBorderWidth
-        clip: true
+        clip: false
 
         MouseArea {
             id: mouseArea
@@ -107,17 +107,15 @@ Item {
         Text {
             id: catText
             anchors.centerIn: parent
+            anchors.verticalCenterOffset: parent.height * (root.mainInstance?.catOffsetY ?? 0.0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.family: bongoFont.name
-            // Use fixed size
-            font.pixelSize: root.capsuleHeight * 0.95
-            // Shift to bottom of the bar
-            y: parent.height * 0.8
+            font.pixelSize: root.capsuleHeight * 0.95 * (root.mainInstance?.catSize ?? 1.0)
             color: root.resolvedCatColor
             text: root.glyphMap[root.catState] ?? "bc"
             visible: !root.paused
-            renderType: Text.NativeRenderingzxczxczxczcccasd
+            renderType: Text.NativeRendering
         }
 
         NIcon {

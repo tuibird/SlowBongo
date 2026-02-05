@@ -13,7 +13,9 @@
   "metadata": {
     "defaultSettings": {
       "idleTimeout": 150,
-      "catColor": "default"
+      "catColor": "default",
+      "catSize": 1.0,
+      "catOffsetY": 0.0
     }
   }
 }

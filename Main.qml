@@ -123,6 +123,14 @@ Item {
         ?? pluginApi?.manifest?.metadata?.defaultSettings?.catColor
         ?? "default"
 
+    readonly property real catSize: pluginApi?.pluginSettings?.catSize
+        ?? pluginApi?.manifest?.metadata?.defaultSettings?.catSize
+        ?? 1.0
+
+    readonly property real catOffsetY: pluginApi?.pluginSettings?.catOffsetY
+        ?? pluginApi?.manifest?.metadata?.defaultSettings?.catOffsetY
+        ?? 0.0
+
     function onKeyPress() {
         if (root.paused) return;
         root.leftWasLast = !root.leftWasLast;
