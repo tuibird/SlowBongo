@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell.Io
 import qs.Commons
@@ -547,147 +546,25 @@ ColumnLayout {
     }
 
     // Cat Size Section
-    Text {
-        text: pluginApi?.tr("settings.cat-size") || "Cat Size"
-        color: Color.mOnSurface
-        font.family: Style.fontFamily
-        font.pointSize: Style.fontSizeM
-        font.weight: Font.DemiBold
-    }
-
-    NBox {
+    NValueSlider {
         Layout.fillWidth: true
-        implicitHeight: sizeContent.implicitHeight + Style.marginM * 2
-
-        RowLayout {
-            id: sizeContent
-            anchors.fill: parent
-            anchors.margins: Style.marginM
-            spacing: Style.marginM
-
-            Text {
-                text: pluginApi?.tr("settings.size-label") || "Size:"
-                color: Color.mOnSurface
-                font.pointSize: Style.fontSizeM
-            }
-
-            Slider {
-                id: sizeSlider
-                Layout.fillWidth: true
-                from: 0.5
-                to: 1.5
-                value: root.editCatSize
-                onValueChanged: root.editCatSize = value
-
-                background: Rectangle {
-                    x: sizeSlider.leftPadding
-                    y: sizeSlider.topPadding + sizeSlider.availableHeight / 2 - height / 2
-                    implicitWidth: 200
-                    implicitHeight: 4
-                    width: sizeSlider.availableWidth
-                    height: implicitHeight
-                    radius: 2
-                    color: Color.mSurfaceContainerHighest
-
-                    Rectangle {
-                        width: sizeSlider.visualPosition * parent.width
-                        height: parent.height
-                        color: Color.mPrimary
-                        radius: 2
-                    }
-                }
-
-                handle: Rectangle {
-                    x: sizeSlider.leftPadding + sizeSlider.visualPosition * (sizeSlider.availableWidth - width)
-                    y: sizeSlider.topPadding + sizeSlider.availableHeight / 2 - height / 2
-                    implicitWidth: 20
-                    implicitHeight: 20
-                    radius: 10
-                    color: sizeSlider.pressed ? Color.mPrimaryContainer : Color.mPrimary
-                    border.color: Color.mOutline
-                    border.width: Style.borderS
-                }
-            }
-
-            Text {
-                text: (root.editCatSize * 100).toFixed(0) + "%"
-                color: Color.mOnSurfaceVariant
-                font.pointSize: Style.fontSizeM
-                Layout.preferredWidth: 50
-            }
-        }
+        label: pluginApi?.tr("settings.cat-size") || "Cat Size"
+        value: root.editCatSize
+        from: 0.5
+        to: 1.5
+        stepSize: 0.01
+        onMoved: value => root.editCatSize = value
     }
 
     // Vertical Position Section
-    Text {
-        text: pluginApi?.tr("settings.vertical-position") || "Vertical Position"
-        color: Color.mOnSurface
-        font.family: Style.fontFamily
-        font.pointSize: Style.fontSizeM
-        font.weight: Font.DemiBold
-    }
-
-    NBox {
+    NValueSlider {
         Layout.fillWidth: true
-        implicitHeight: yOffsetContent.implicitHeight + Style.marginM * 2
-
-        RowLayout {
-            id: yOffsetContent
-            anchors.fill: parent
-            anchors.margins: Style.marginM
-            spacing: Style.marginM
-
-            Text {
-                text: pluginApi?.tr("settings.y-offset-label") || "Y Offset:"
-                color: Color.mOnSurface
-                font.pointSize: Style.fontSizeM
-            }
-
-            Slider {
-                id: yOffsetSlider
-                Layout.fillWidth: true
-                from: -0.5
-                to: 0.5
-                value: root.editCatOffsetY
-                onValueChanged: root.editCatOffsetY = value
-
-                background: Rectangle {
-                    x: yOffsetSlider.leftPadding
-                    y: yOffsetSlider.topPadding + yOffsetSlider.availableHeight / 2 - height / 2
-                    implicitWidth: 200
-                    implicitHeight: 4
-                    width: yOffsetSlider.availableWidth
-                    height: implicitHeight
-                    radius: 2
-                    color: Color.mSurfaceContainerHighest
-
-                    Rectangle {
-                        width: yOffsetSlider.visualPosition * parent.width
-                        height: parent.height
-                        color: Color.mPrimary
-                        radius: 2
-                    }
-                }
-
-                handle: Rectangle {
-                    x: yOffsetSlider.leftPadding + yOffsetSlider.visualPosition * (yOffsetSlider.availableWidth - width)
-                    y: yOffsetSlider.topPadding + yOffsetSlider.availableHeight / 2 - height / 2
-                    implicitWidth: 20
-                    implicitHeight: 20
-                    radius: 10
-                    color: yOffsetSlider.pressed ? Color.mPrimaryContainer : Color.mPrimary
-                    border.color: Color.mOutline
-                    border.width: Style.borderS
-                }
-            }
-
-            Text {
-                text: (root.editCatOffsetY * 100).toFixed(0) + "%"
-                color: Color.mOnSurfaceVariant
-                font.pointSize: Style.fontSizeM
-                Layout.preferredWidth: 50
-            }
-        }
+        label: pluginApi?.tr("settings.vertical-position") || "Vertical Position"
+        value: root.editCatOffsetY
+        from: -0.5
+        to: 0.5
+        stepSize: 0.01
+        onMoved: value => root.editCatOffsetY = value
     }
 
     function saveSettings() {
