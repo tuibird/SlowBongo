@@ -81,7 +81,7 @@ Item {
             font.family: bongoFont.name
             font.pixelSize: root.capsuleHeight * root.catSize
             font.weight: Font.Thin
-            color: root.resolvedCatColor
+            color: mouseArea.containsMouse ? Color.mOnHover : root.resolvedCatColor
             text: root.glyphMap[root.catState] ?? "bc"
             visible: !root.paused
             renderType: Text.NativeRendering
@@ -91,7 +91,7 @@ Item {
             anchors.centerIn: parent
             icon: "player-pause-filled"
             pointSize: root.barFontSize
-            color: root.resolvedCatColor
+            color: mouseArea.containsMouse ? Color.mOnHover : root.resolvedCatColor
             visible: root.paused
         }
     }
