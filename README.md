@@ -61,7 +61,7 @@ When enabled, the cat taps along to the beat when music is playing instead of on
   ```bash
   sudo usermod -a -G input $USER
   ```
-  Log out and back in for the group change to take effect.
+  Restart for the group change to take effect.
 
 ### Optional
 
