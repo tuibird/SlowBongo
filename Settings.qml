@@ -561,7 +561,7 @@ ColumnLayout {
         from: -0.39
         to: 0.61
         stepSize: 0.01
-        text: { let v = -(root.editCatOffsetY - 0.11); return (v > 0 ? "+" : v === 0 ? "" : "") + v.toFixed(2) }
+        text: { let v = Math.round(-(root.editCatOffsetY - 0.11) * 100) / 100; return (v > 0 ? "+" : "") + v.toFixed(2) }
         onMoved: value => root.editCatOffsetY = value
     }
 
