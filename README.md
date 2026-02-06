@@ -20,7 +20,7 @@ A bongo cat that sits in your bar and slaps when you type. When i write QML i fe
 
 2. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/slowbongo.git
+   git clone https://github.com/tuibird/slowbongo.git
    ```
 
 3. Open the Noctalia plugins settings menu and enable **Slow Bongo**.
