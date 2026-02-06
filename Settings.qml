@@ -36,12 +36,6 @@ ColumnLayout {
         return pluginApi?.manifest?.metadata?.defaultSettings?.catOffsetY ?? 0.0
     }
 
-    property int editCatWeight: {
-        let saved = pluginApi?.pluginSettings?.catWeight
-        if (saved !== undefined && saved !== null) return saved
-        return pluginApi?.manifest?.metadata?.defaultSettings?.catWeight ?? Font.Medium
-    }
-
     property var editInputDevices: {
         let saved = pluginApi?.pluginSettings?.inputDevices
         if (saved && saved.length > 0) return saved
@@ -708,92 +702,6 @@ ColumnLayout {
         }
     }
 
-    // Font Weight Section
-    Text {
-        text: "Font Weight"
-        color: Color.mOnSurface
-        font.family: Style.fontFamily
-        font.pointSize: Style.fontSizeM
-        font.weight: Font.DemiBold
-    }
-
-    NBox {
-        Layout.fillWidth: true
-        implicitHeight: weightContent.implicitHeight + Style.marginM * 2
-
-        RowLayout {
-            id: weightContent
-            anchors.fill: parent
-            anchors.margins: Style.marginM
-            spacing: Style.marginM
-
-            Text {
-                text: "Weight:"
-                color: Color.mOnSurface
-                font.pointSize: Style.fontSizeM
-            }
-
-            Slider {
-                id: weightSlider
-                Layout.fillWidth: true
-                from: 0
-                to: 8
-                stepSize: 1
-                value: {
-                    // Map saved weight value to slider index (Medium is default at index 4)
-                    const weights = [Font.Thin, Font.ExtraLight, Font.Light, Font.Normal, Font.Medium, Font.DemiBold, Font.Bold, Font.ExtraBold, Font.Black]
-                    return weights.indexOf(root.editCatWeight) >= 0 ? weights.indexOf(root.editCatWeight) : 4
-                }
-                onValueChanged: {
-                    // Map slider index to Font weight constant
-                    const weights = [Font.Thin, Font.ExtraLight, Font.Light, Font.Normal, Font.Medium, Font.DemiBold, Font.Bold, Font.ExtraBold, Font.Black]
-                    root.editCatWeight = weights[Math.round(value)]
-                }
-
-                background: Rectangle {
-                    x: weightSlider.leftPadding
-                    y: weightSlider.topPadding + weightSlider.availableHeight / 2 - height / 2
-                    implicitWidth: 200
-                    implicitHeight: 4
-                    width: weightSlider.availableWidth
-                    height: implicitHeight
-                    radius: 2
-                    color: Color.mSurfaceContainerHighest
-
-                    Rectangle {
-                        width: weightSlider.visualPosition * parent.width
-                        height: parent.height
-                        color: Color.mPrimary
-                        radius: 2
-                    }
-                }
-
-                handle: Rectangle {
-                    x: weightSlider.leftPadding + weightSlider.visualPosition * (weightSlider.availableWidth - width)
-                    y: weightSlider.topPadding + weightSlider.availableHeight / 2 - height / 2
-                    implicitWidth: 20
-                    implicitHeight: 20
-                    radius: 10
-                    color: weightSlider.pressed ? Color.mPrimaryContainer : Color.mPrimary
-                    border.color: Color.mOutline
-                    border.width: Style.borderS
-                }
-            }
-
-            Text {
-                text: {
-                    const weights = ["Thin", "ExtraLight", "Light", "Normal", "Medium", "DemiBold", "Bold", "ExtraBold", "Black"]
-                    const weightValues = [Font.Thin, Font.ExtraLight, Font.Light, Font.Normal, Font.Medium, Font.DemiBold, Font.Bold, Font.ExtraBold, Font.Black]
-                    const index = weightValues.indexOf(root.editCatWeight)
-                    return index >= 0 ? weights[index] : "Medium"
-                }
-                color: Color.mOnSurfaceVariant
-                font.pointSize: Style.fontSizeM
-                Layout.preferredWidth: 90
-            }
-        }
-    }
-
     // Vertical Position Section
     Text {
         text: "Vertical Position"
@@ -875,7 +783,6 @@ ColumnLayout {
         pluginApi.pluginSettings.catColor = root.editCatColor
         pluginApi.pluginSettings.catSize = root.editCatSize
         pluginApi.pluginSettings.catOffsetY = root.editCatOffsetY
-        pluginApi.pluginSettings.catWeight = root.editCatWeight
         pluginApi.pluginSettings.raveMode = root.editRaveMode
         pluginApi.pluginSettings.tappyMode = root.editTappyMode
         pluginApi.saveSettings()

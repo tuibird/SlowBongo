@@ -15,26 +15,17 @@ Item {
 
     readonly property var mainInstance: pluginApi?.mainInstance
     readonly property string screenName: screen?.name ?? ""
+    readonly property string barPosition: Settings.getBarPositionForScreen(screenName)
+    readonly property bool isBarVertical: barPosition === "left" || barPosition === "right"
     readonly property real capsuleHeight: Style.getCapsuleHeightForScreen(screenName)
     readonly property real barFontSize: Style.getBarFontSizeForScreen(screenName)
-    readonly property bool isBarVertical: section === "left" || section === "right"
 
-    readonly property real contentWidth: isBarVertical
-        ? capsuleHeight
-        : (catText.implicitWidth * (mainInstance?.catSize ?? 1.0)) + 15
-    readonly property real contentHeight: isBarVertical
-        ? catText.implicitHeight * (mainInstance?.catSize ?? 1.0)
-        : capsuleHeight
+    // Settings tie-ins
+    readonly property real catSize: mainInstance?.catSize ?? 1.0
+    readonly property real catOffsetY: mainInstance?.catOffsetY ?? 0.0
+    readonly property real widthPadding: pluginApi?.pluginSettings?.widthPadding ?? 0.2
 
-    width: isBarVertical ? capsuleHeight : contentWidth
-    height: isBarVertical ? contentHeight : capsuleHeight
-
-    implicitWidth: width
-    implicitHeight: height
-
-    // Each pose is two glyphs (left half + right half):
-    // b = left half paw up,  d = left half paw down
-    // c = right half paw up, a = right half paw down
+    // Glyph map: b = left paw up, d = left paw down, c = right paw up, a = right paw down
     readonly property var glyphMap: ["bc", "dc", "ba"]  // [idle, leftSlap, rightSlap]
 
     readonly property int catState: mainInstance?.catState ?? 0
@@ -55,18 +46,17 @@ Item {
 
     readonly property color resolvedCatColor: showRainbowColor ? rainbowColor : resolveColor(catColorKey)
 
-    // Debug logging - disabled for performance
-    // onShowRainbowColorChanged: {
-    //     console.log("BarWidget: showRainbowColor = " + showRainbowColor)
-    // }
+    // Sizing: capsule dimensions drive implicit size
+    readonly property real horizontalPadding: capsuleHeight * widthPadding
+    readonly property real contentWidth: isBarVertical
+        ? capsuleHeight
+        : catText.implicitWidth + horizontalPadding
+    readonly property real contentHeight: isBarVertical
+        ? catText.implicitHeight + horizontalPadding
+        : capsuleHeight
 
-    // onRainbowColorChanged: {
-    //     console.log("BarWidget: rainbowColor = " + rainbowColor)
-    // }
-
-    // onResolvedCatColorChanged: {
-    //     console.log("BarWidget: resolvedCatColor = " + resolvedCatColor)
-    // }
+    implicitWidth: contentWidth
+    implicitHeight: contentHeight
 
     FontLoader {
         id: bongoFont
@@ -75,60 +65,22 @@ Item {
 
     Rectangle {
         id: visualCapsule
-        anchors.fill: parent
+        x: Style.pixelAlignCenter(parent.width, width)
+        y: Style.pixelAlignCenter(parent.height, height)
+        width: root.contentWidth
+        height: root.contentHeight
         radius: Style.radiusL
         color: mouseArea.containsMouse ? Color.mHover : Style.capsuleColor
         border.color: Style.capsuleBorderColor
         border.width: Style.capsuleBorderWidth
-        clip: false
-
-        MouseArea {
-            id: mouseArea
-            anchors.fill: parent
-            hoverEnabled: true
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-            cursorShape: Qt.PointingHandCursor
-            onClicked: mouse => {
-                if (mouse.button === Qt.RightButton) {
-                    PanelService.showContextMenu(contextMenu, root, screen);
-                } else {
-                    if (root.mainInstance) {
-                        root.mainInstance.paused = !root.mainInstance.paused;
-                    }
-                }
-            }
-        }
-
-        NPopupContextMenu {
-            id: contextMenu
-
-            model: [
-                {
-                    "label": I18n.tr("actions.widget-settings"),
-                    "action": "widget-settings",
-                    "icon": "settings"
-                },
-            ]
-
-            onTriggered: action => {
-                contextMenu.close();
-                PanelService.closeContextMenu(screen);
-
-                if (action === "widget-settings") {
-                    BarService.openPluginSettings(screen, pluginApi.manifest);
-                }
-            }
-        }
 
         Text {
             id: catText
             anchors.centerIn: parent
-            anchors.verticalCenterOffset: parent.height * (root.mainInstance?.catOffsetY ?? 0.0)
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+            anchors.verticalCenterOffset: root.capsuleHeight * root.catOffsetY
             font.family: bongoFont.name
-            font.pixelSize: root.capsuleHeight * 0.95 * (root.mainInstance?.catSize ?? 1.0)
-            font.weight: root.mainInstance?.catWeight ?? Font.Medium
+            font.pixelSize: root.capsuleHeight * root.catSize
+            font.weight: Font.Thin
             color: root.resolvedCatColor
             text: root.glyphMap[root.catState] ?? "bc"
             visible: !root.paused
@@ -141,6 +93,37 @@ Item {
             pointSize: root.barFontSize
             color: root.resolvedCatColor
             visible: root.paused
+        }
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        cursorShape: Qt.PointingHandCursor
+        onClicked: mouse => {
+            if (mouse.button === Qt.RightButton) {
+                PanelService.showContextMenu(contextMenu, root, screen);
+            } else if (root.mainInstance) {
+                root.mainInstance.paused = !root.mainInstance.paused;
+            }
+        }
+    }
+
+    NPopupContextMenu {
+        id: contextMenu
+        model: [{
+            "label": I18n.tr("actions.widget-settings"),
+            "action": "widget-settings",
+            "icon": "settings"
+        }]
+        onTriggered: action => {
+            contextMenu.close();
+            PanelService.closeContextMenu(screen);
+            if (action === "widget-settings") {
+                BarService.openPluginSettings(screen, pluginApi.manifest);
+            }
         }
     }
 }

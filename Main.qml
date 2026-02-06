@@ -117,7 +117,6 @@ Item {
     readonly property string catColor: pluginApi?.pluginSettings?.catColor ?? pluginApi?.manifest?.metadata?.defaultSettings?.catColor ?? "default"
     readonly property real catSize: pluginApi?.pluginSettings?.catSize ?? pluginApi?.manifest?.metadata?.defaultSettings?.catSize ?? 1.0
     readonly property real catOffsetY: pluginApi?.pluginSettings?.catOffsetY ?? pluginApi?.manifest?.metadata?.defaultSettings?.catOffsetY ?? 0.0
-    readonly property int catWeight: pluginApi?.pluginSettings?.catWeight ?? pluginApi?.manifest?.metadata?.defaultSettings?.catWeight ?? Font.Medium
     readonly property bool raveMode: pluginApi?.pluginSettings?.raveMode ?? pluginApi?.manifest?.metadata?.defaultSettings?.raveMode ?? false
     readonly property bool tappyMode: pluginApi?.pluginSettings?.tappyMode ?? pluginApi?.manifest?.metadata?.defaultSettings?.tappyMode ?? false
 
