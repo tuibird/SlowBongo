@@ -11,6 +11,20 @@ A bongo cat that sits in your bar and slaps when you type. When i write QML i fe
 - **Auto-Detection**: Automatically detects keyboard input devices
 - **Bar Widget**: Compact widget that fits seamlessly in your Noctalia bar
 
+## Installation
+
+1. Navigate to the Noctalia plugins directory:
+   ```bash
+   cd ~/.config/noctalia/plugins
+   ```
+
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/slowbongo.git
+   ```
+
+3. Open the Noctalia plugins settings menu and enable **Slow Bongo**.
+
 ## Configuration
 
 The plugin offers several customization options available in the settings panel:
