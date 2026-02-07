@@ -13,17 +13,16 @@ A bongo cat that sits in your bar and slaps when you type. This is very early da
 
 ## Installation
 
-1. Navigate to the Noctalia plugins directory:
-   ```bash
-   cd ~/.config/noctalia/plugins
+1. Navigate to the Noctalia settings plugins section.
+
+2. Enter the sources sub-menu.
+
+3. Add Slow Bongo as a custom repository.
+  ```bash
+  https://github.com/tuibird/slowbongo.git
    ```
 
-2. Clone the repository:
-   ```bash
-   git clone https://github.com/tuibird/slowbongo.git
-   ```
-
-3. Open the Noctalia plugins settings menu and enable **Slow Bongo**.
+4. Open the Noctalia plugins store and enable **Slow Bongo**.
 
 ## Configuration
 
