@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "plugins": [
+    {
+      "id": "slowbongo",
+      "name": "Slow Bongo",
+      "version": "0.6.9",
+      "official": false,
+      "author": "tui",
+      "description": "A bongo cat that sits in your bar and slaps when you type.",
+      "repository": "https://github.com/tui/slowbongo",
+      "minNoctaliaVersion": "3.6.0",
+      "license": "MIT",
+      "tags": [
+        "Bar",
+        "Cute",
+        "Audio",
+        "Fun"
+      ],
+      "lastUpdated": null
+    }
+  ]
+}

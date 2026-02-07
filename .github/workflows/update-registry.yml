@@ -1,0 +1,56 @@
+name: Update Plugin Registry
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/manifest.json'
+      - '.github/workflows/update-registry.js'
+  workflow_dispatch:
+
+jobs:
+  update-registry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Run registry update script
+        run: node .github/workflows/update-registry.js
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet registry.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes to registry.json"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in registry.json"
+          fi
+      
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add registry.json
+          git commit -m "chore: update plugin registry [skip ci]"
+          git push
+      
+      - name: Upload registry artifact
+        if: steps.check_changes.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: updated-registry
+          path: registry.json

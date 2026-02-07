@@ -1,14 +1,18 @@
 {
   "id": "slowbongo",
   "name": "Slow Bongo",
-  "version": "1.0.0",
+  "version": "0.6.9",
   "minNoctaliaVersion": "3.6.0",
   "author": "tui",
   "official": false,
   "description": "A bongo cat that sits in your bar and slaps when you type.",
   "license": "MIT",
   "repository": "https://github.com/tui/slowbongo",
-  "tags": ["Bar", "Fun", "Animation"],
+  "tags": [
+    "Bar",
+    "Cute",
+    "Audio",
+    "Fun"],
   "entryPoints": {
     "main": "Main.qml",
     "barWidget": "BarWidget.qml",
