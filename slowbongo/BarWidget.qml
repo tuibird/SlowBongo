@@ -9,13 +9,13 @@ Item {
     id: root
 
     property var pluginApi: null
-    property ShellScreen screen
+    property var screen: null
     property string widgetId: ""
     property string section: ""
+    property string barPosition: ""
 
     readonly property var mainInstance: pluginApi?.mainInstance
     readonly property string screenName: screen?.name ?? ""
-    readonly property string barPosition: Settings.getBarPositionForScreen(screenName)
     readonly property bool isBarVertical: barPosition === "left" || barPosition === "right"
     readonly property real capsuleHeight: Style.getCapsuleHeightForScreen(screenName)
     readonly property real barFontSize: Style.getBarFontSizeForScreen(screenName)
