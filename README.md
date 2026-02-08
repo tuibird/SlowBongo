@@ -5,8 +5,10 @@ A bongo cat that sits in your bar and slaps when you type. This is very early da
 
 ## Features
 
+- **Bar Widget**: Compact widget that fits seamlessly in your Noctalia bar
 - **Keyboard Reactive**: Cat taps its paws in alternation when you type
 - **Audio Reactive**: Optional rave mode and tappy mode that react to music
+- **Easy pause**: Can quickly pause and un-pause reactivity with a single left click.
 - **Customizable Appearance**: Choose from multiple color schemes and adjust size
 - **Font-Based Animation**: Uses a bongo cat font for easy rendering
 - **Bar Widget**: Compact widget that fits seamlessly in your Noctalia bar
@@ -47,7 +49,6 @@ When enabled, the cat taps along to the beat when music is playing instead of on
 ### Size and Position
 
 - **Cat Size**: Scale the cat from 50% to 150% of default size
-- **Font Weight**: Adjust the cat's line thickness from Thin to Black
 - **Vertical Position**: Fine-tune the cat's vertical alignment in the bar
 
 ## Requirements
@@ -115,5 +116,5 @@ MIT
 
 ## Credits
 
-- Thank you to [Kitgore](https://github.com/kitgore) for the amazing bongo cat font 
+- Thank you to [Kitgore](https://github.com/kitgore) for the inital bongo cat font 
 - Noctalia plugins for the amazing guides/examples
