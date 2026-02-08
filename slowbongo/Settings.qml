@@ -231,7 +231,6 @@ ColumnLayout {
     Text {
         text: pluginApi?.tr("settings.requirements") || "Requirements"
         color: Color.mOnSurface
-        font.family: Style.fontFamily
         font.pointSize: Style.fontSizeM
         font.weight: Font.DemiBold
     }
@@ -306,7 +305,6 @@ ColumnLayout {
     Text {
         text: pluginApi?.tr("settings.input-devices") || "Input Devices"
         color: Color.mOnSurface
-        font.family: Style.fontFamily
         font.pointSize: Style.fontSizeM
         font.weight: Font.DemiBold
     }
@@ -417,7 +415,6 @@ ColumnLayout {
     Text {
         text: pluginApi?.tr("settings.colours") || "Colours"
         color: Color.mOnSurface
-        font.family: Style.fontFamily
         font.pointSize: Style.fontSizeM
         font.weight: Font.DemiBold
     }

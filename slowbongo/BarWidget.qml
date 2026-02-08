@@ -16,7 +16,8 @@ Item {
 
     readonly property var mainInstance: pluginApi?.mainInstance
     readonly property string screenName: screen?.name ?? ""
-    readonly property bool isBarVertical: barPosition === "left" || barPosition === "right"
+    readonly property string resolvedBarPosition: Settings.getBarPositionForScreen(screenName)
+    readonly property bool isBarVertical: resolvedBarPosition === "left" || resolvedBarPosition === "right"
     readonly property real capsuleHeight: Style.getCapsuleHeightForScreen(screenName)
     readonly property real barFontSize: Style.getBarFontSizeForScreen(screenName)
 
@@ -24,6 +25,11 @@ Item {
     readonly property real catSize: mainInstance?.catSize ?? 1.0
     readonly property real catOffsetY: mainInstance?.catOffsetY ?? 0.0
     readonly property real widthPadding: pluginApi?.pluginSettings?.widthPadding ?? 0.2
+
+    // Orientation-aware cat sizing (both driven by the catSize slider)
+    readonly property real catSizeHorizontal: catSize
+    readonly property real catSizeVertical: catSize * 0.50
+    readonly property real activeCatSize: isBarVertical ? catSizeVertical : catSizeHorizontal
 
     // Glyph map: b = left paw up, d = left paw down, c = right paw up, a = right paw down, e+f = sleep
     readonly property var glyphMap: ["bc", "dc", "ba"]  // [idle, leftSlap, rightSlap]
@@ -80,7 +86,7 @@ Item {
             anchors.centerIn: parent
             anchors.verticalCenterOffset: root.capsuleHeight * root.catOffsetY
             font.family: bongoFont.name
-            font.pixelSize: root.capsuleHeight * root.catSize
+            font.pixelSize: root.capsuleHeight * root.activeCatSize
             font.weight: Font.Thin
             color: mouseArea.containsMouse ? Color.mOnHover : root.resolvedCatColor
             text: root.paused ? root.sleepGlyph : (root.glyphMap[root.catState] ?? "bc")
