@@ -4,7 +4,7 @@
     {
       "id": "slowbongo",
       "name": "Slow Bongo",
-      "version": "0.7.2",
+      "version": "0.7.3",
       "official": false,
       "author": "tui",
       "description": "A bongo cat that sits in your bar and slaps when you type.",
@@ -17,7 +17,7 @@
         "Audio",
         "Fun"
       ],
-      "lastUpdated": "2026-02-08T08:44:54+13:00"
+      "lastUpdated": "2026-02-08T14:46:56+13:00"
     }
   ]
 }
