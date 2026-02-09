@@ -60,10 +60,15 @@ Item {
     readonly property real horizontalPadding: capsuleHeight * widthPadding
     readonly property real contentWidth: isBarVertical
         ? capsuleHeight
-        : catText.implicitWidth + horizontalPadding
+        : catText.implicitWidth + horizontalPadding + (paused ? pauseExpandAmount : 0)
     readonly property real contentHeight: isBarVertical
-        ? catText.implicitHeight + horizontalPadding
+        ? catText.implicitHeight + horizontalPadding + (paused ? pauseExpandAmount : 0)
         : capsuleHeight
+
+    // Pause indicator expand/slide
+    readonly property real pauseIconSize: capsuleHeight * 0.45
+    readonly property real pauseExpandAmount: capsuleHeight * 0.8
+    readonly property real pauseSlideOffset: paused ? -pauseExpandAmount / 2 : 0
 
     implicitWidth: contentWidth
     implicitHeight: contentHeight
@@ -80,20 +85,57 @@ Item {
         width: root.contentWidth
         height: root.contentHeight
         radius: Style.radiusL
-        color: mouseArea.containsMouse ? Color.mHover : Style.capsuleColor
+
+        Behavior on width {
+            NumberAnimation { duration: Style.animationNormal; easing.type: Easing.OutCubic }
+        }
+        Behavior on height {
+            NumberAnimation { duration: Style.animationNormal; easing.type: Easing.OutCubic }
+        }
+        color: mouseArea.containsMouse ? Color.mHover : (root.paused ? root.resolvedCatColor : Style.capsuleColor)
         border.color: Style.capsuleBorderColor
         border.width: Style.capsuleBorderWidth
+
+        Behavior on color {
+            ColorAnimation { duration: Style.animationNormal; easing.type: Easing.OutCubic }
+        }
 
         Text {
             id: catText
             anchors.centerIn: parent
-            anchors.verticalCenterOffset: root.capsuleHeight * root.catOffsetY
+            anchors.horizontalCenterOffset: root.isBarVertical ? 0 : root.pauseSlideOffset
+            anchors.verticalCenterOffset: root.capsuleHeight * root.catOffsetY + (root.isBarVertical ? root.pauseSlideOffset : 0)
             font.family: bongoFont.name
             font.pixelSize: root.capsuleHeight * root.activeCatSize
             font.weight: Font.Thin
-            color: mouseArea.containsMouse ? Color.mOnHover : root.resolvedCatColor
+            color: mouseArea.containsMouse ? Color.mOnHover : (root.paused ? Color.mSurface : root.resolvedCatColor)
             text: (root.paused || root.waiting) ? root.sleepGlyph : (root.blinking ? root.blinkGlyph : (root.glyphMap[root.catState] ?? "bc"))
-            visible: true
+
+            Behavior on anchors.horizontalCenterOffset {
+                NumberAnimation { duration: Style.animationNormal; easing.type: Easing.OutCubic }
+            }
+            Behavior on anchors.verticalCenterOffset {
+                NumberAnimation { duration: Style.animationNormal; easing.type: Easing.OutCubic }
+            }
+        }
+
+        NIcon {
+            id: pauseIcon
+            icon: "player-pause-filled"
+            pointSize: root.pauseIconSize
+            applyUiScale: false
+            color: catText.color
+            opacity: root.paused ? 1 : 0
+            x: root.isBarVertical
+                ? (parent.width - width) / 2
+                : parent.width - (root.pauseExpandAmount + width) / 2 - root.capsuleHeight * 0.20
+            y: root.isBarVertical
+                ? parent.height - (root.pauseExpandAmount + height) / 2 - root.capsuleHeight * 0.10
+                : (parent.height - height) / 2
+
+            Behavior on opacity {
+                NumberAnimation { duration: Style.animationFast; easing.type: Easing.OutCubic }
+            }
         }
 
         Repeater {
