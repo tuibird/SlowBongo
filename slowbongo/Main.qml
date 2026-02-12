@@ -227,11 +227,16 @@ Item {
         model: root.inputDevices
 
         Item {
+            id: deviceMonitor
             required property string modelData
+
+            property int retryCount: 0
+            property bool hasNotified: false
+            readonly property var retryIntervals: [30000, 90000, 300000] // 30s, 1:30, 5min
 
             Process {
                 id: evtestProc
-                command: ["evtest", modelData]
+                command: ["evtest", deviceMonitor.modelData]
                 running: true
 
                 stdout: SplitParser {
@@ -242,25 +247,79 @@ Item {
 
                 stderr: StdioCollector {}
 
-                onExited: (exitCode, exitStatus) => {
-                    Logger.w("Slow Bongo", "evtest (" + modelData + ") exited with code " + exitCode);
+                onRunningChanged: {
+                    if (running) {
+                        // Successfully started - reset retry counter and notification flag
+                        deviceMonitor.retryCount = 0;
+                        deviceMonitor.hasNotified = false;
+                    }
+                }
+
+                onExited: exitCode => {
+                    Logger.w("Slow Bongo", "evtest (" + deviceMonitor.modelData + ") exited with code " + exitCode);
 
                     if (exitCode !== 0) {
-                        ToastService.showWarning(
-                            root.pluginApi?.tr("toast.evtest-error") ?? "SlowBongo",
-                            root.pluginApi?.tr("toast.evtest-error-desc") ?? "Keyboard monitoring stopped. Restarting..."
-                        );
-                    }
+                        deviceMonitor.retryCount++;
 
-                    restartTimer.start();
+                        // Only show notification on first failure to avoid spam
+                        if (!deviceMonitor.hasNotified) {
+                            ToastService.showWarning(
+                                root.pluginApi?.tr("toast.evtest-error") ?? "SlowBongo",
+                                root.pluginApi?.tr("toast.device-disconnected") ?? ("Device disconnected: " + deviceMonitor.modelData)
+                            );
+                            deviceMonitor.hasNotified = true;
+                        }
+
+                        // Check to continue retrying
+                        if (deviceMonitor.retryCount <= deviceMonitor.retryIntervals.length) {
+                            const interval = deviceMonitor.retryIntervals[deviceMonitor.retryCount - 1];
+                            const intervalSec = Math.floor(interval / 1000);
+                            Logger.i("Slow Bongo", "Will retry in " + intervalSec + "s (attempt " + deviceMonitor.retryCount + "/" + deviceMonitor.retryIntervals.length + ")");
+                            restartTimer.interval = interval;
+                            restartTimer.start();
+                        } else {
+                            Logger.w("Slow Bongo", "Max retries reached for device: " + deviceMonitor.modelData + ". Giving up.");
+                            ToastService.showInfo(
+                                root.pluginApi?.tr("toast.device-gave-up") ?? "SlowBongo",
+                                root.pluginApi?.tr("toast.device-gave-up-desc") ?? ("Stopped trying to reconnect to: " + deviceMonitor.modelData)
+                            );
+                        }
+                    } else {
+                        // Clean exit (exitCode 0) - don't spam, just quietly retry once
+                        restartTimer.interval = deviceMonitor.retryIntervals[0];
+                        restartTimer.start();
+                    }
                 }
             }
 
             Timer {
                 id: restartTimer
-                interval: 2000
                 repeat: false
-                onTriggered: evtestProc.running = true
+                onTriggered: {
+                    // Check if device file exists before attempting restart
+                    deviceCheckProc.running = true;
+                }
+            }
+
+            // Check if device file exists before restarting evtest
+            Process {
+                id: deviceCheckProc
+                command: ["test", "-e", deviceMonitor.modelData]
+                running: false
+
+                onExited: exitCode => {
+                    if (exitCode === 0) {
+                        // Device exists, safe to restart evtest
+                        Logger.i("Slow Bongo", "Device detected, restarting monitoring: " + deviceMonitor.modelData);
+                        evtestProc.running = true;
+                    } else {
+                        // Device doesn't exist, schedule next check
+                        if (deviceMonitor.retryCount <= deviceMonitor.retryIntervals.length) {
+                            Logger.i("Slow Bongo", "Device not found, will check again: " + deviceMonitor.modelData);
+                            restartTimer.start();
+                        }
+                    }
+                }
             }
         }
     }
