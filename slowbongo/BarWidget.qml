@@ -32,7 +32,7 @@ Item {
     readonly property real activeCatSize: isBarVertical ? catSizeVertical : catSizeHorizontal
 
     // Glyph map: b = left paw up, d = left paw down, c = right paw up, a = right paw down, e+f = sleep, g+h = blink
-    readonly property var glyphMap: ["bc", "dc", "ba"]  // [idle, leftSlap, rightSlap]
+    readonly property var glyphMap: ["bc", "dc", "ba", "da"]  // [idle, leftSlap, rightSlap, bothSlap]
     readonly property string sleepGlyph: "ef"
     readonly property string blinkGlyph: "gh"
 
