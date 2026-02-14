@@ -13,7 +13,7 @@
     "tappy-mode": "Tappy Mode",
     "tappy-mode-desc": "Make the cat tap along to the beat when music is playing",
     "mpris-filter": "MPRIS Filtering",
-    "mpris-filter-desc": "Only react to audio when a non-blacklisted media player is playing (uses NoctalisShell audio blacklist)",
+    "mpris-filter-desc": "Only react to audio when a non-blacklisted media player is playing (uses Noctalia Shell audio blacklist)",
     "evtest-installed": "evtest is installed",
     "evtest-not-installed": "evtest is not installed",
     "in-input-group": "User is in the input group",
